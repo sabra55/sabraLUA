@@ -4,15 +4,16 @@
 local Block = {}
 Block.__index = Block
 
--- function to create a new Block, which holds an X/Y coordinate
--- and some text that can be drawn
-function Block.new()
+-- function to create a new Block with a given X/Y coordinate
+-- and some text that can be drawn. if x or y is not
+-- defined, it will default to 0
+function Block.new(x, y)
     -- create a new instance of Block
     local self = setmetatable({}, Block)
     
     self.text = "test block 1234567890 asdfghjklzxcvbnm"
-    self.x = 0
-    self.y = 0
+    self.x = x or 0 -- if x is nothing or nil, default to 0
+    self.y = y or 0 -- same for y
     self.font = love.graphics.newFont(9)
     
     -- create block texture

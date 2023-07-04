@@ -23,7 +23,7 @@ end
 
 local Block = require("block")
 local blocks = {} -- list of all blocks
-table.insert(blocks, Block.new()) -- create a new block
+table.insert(blocks, Block.new(20, 20)) -- create a new block
 
 -- variables used for block dragging state
 -- currently, there is only one block, so this could
@@ -51,9 +51,17 @@ function love.load()
 	h3string = "Help menu item 3"]] --old code
 end
 
+-- font for drawing help that (that should
+-- be removed later)
+local font_12px = love.graphics.newFont(12)
 function love.draw()
 	--love.graphics.print(v,50,50) --old code
 	love.graphics.clear(0.95, 0.98, 0.9, 0) -- refresh screen
+
+	-- draw help text
+	love.graphics.setColor(0, 0, 0)
+	love.graphics.setFont(font_12px)
+	love.graphics.print("press rmb to create a new block", 1, 1)
 
 	-- draw all blocks
 	for _, block in ipairs(blocks) do
@@ -95,6 +103,10 @@ function love.mousepressed(mx, my, button)
 				break
 			end
 		end
+	
+	-- right mouse button pressed, so create a new block at mouse position
+	elseif button == 2 then
+		table.insert(blocks, Block.new(mx, my))
 	end
 end
 
