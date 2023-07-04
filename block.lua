@@ -29,19 +29,18 @@ function Block:draw()
     love.graphics.draw(self.spritesheet ,self.left_part, self.x, self.y)
 
     -- procedure to draw middle part of block
-    -- this draws a 1 pixel-wide slice for every pixel the middle
-    -- part occupies... a bit unoptimized, as stretching the texture
-    -- to fit the given width should give the same result.
-	local str = love.graphics.newText(self.font, self.text) -- create block string
-	local str_i = str:add(self.text) -- get block string index
-	local text_len = str:getWidth(str_i) -- text's length in pixels
+    love.graphics.setFont(self.font) -- set active part
+	local text_len = self.font:getWidth(self.text) -- text's length in pixels
 
-	for i=0, text_len do -- loop through text pixel length
-		love.graphics.draw(self.spritesheet, self.middle_part, self.x+10 + i, self.y)	-- draw middle part
-	end
+    -- draw the middle part stretched to fit the text
+    love.graphics.draw(
+        self.spritesheet, self.middle_part,
+        self.x + 10, self.y,
+        0, text_len * 1, 1 -- orientation, scalex, scaley
+    )
 
 	love.graphics.draw(self.spritesheet, self.right_part, self.x+10 + text_len, self.y)	-- draw right part	
-	love.graphics.draw(str, self.x + 2, self.y + 2) -- draw block string
+	love.graphics.print(self.text, self.x + 2, self.y + 2) -- draw block text
 end
 
 return Block

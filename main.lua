@@ -16,8 +16,7 @@ if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
 end
 
 local Block = require("block")
-
-local block
+local block = Block.new() -- create a new block
 
 function love.load()
 	--[[fmstring = "File"
@@ -32,7 +31,6 @@ function love.load()
 	h1string = "Help menu item 1"
 	h2string = "Help menu item 2"
 	h3string = "Help menu item 3"]] --old code
-	block = Block.new()
 end
 
 function love.draw()
