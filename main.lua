@@ -18,6 +18,17 @@ end
 local Block = require("block")
 local block = Block.new() -- create a new block
 
+-- variables used for block dragging state
+-- currently, there is only one block, so this could
+-- be represented as a boolean. but obviously in the future,
+-- there will be more than one block
+local dragged_block = nil -- the block that is currently being dragged
+
+-- the following two variables are only valid if dragged_block
+-- is not equal to nil
+local block_drag_x = 0 -- the mouse X offset from the origin of dragged_block
+local block_drag_y = 0 -- the Y offset
+
 function love.load()
 	--[[fmstring = "File"
 	omstring = "Options"
@@ -36,15 +47,43 @@ end
 function love.draw()
 	--love.graphics.print(v,50,50) --old code
 	love.graphics.clear(0.95, 0.98, 0.9, 0) -- refresh screen
+	block:draw() -- draw the block at its new position
+end
+
+function love.update()
 	local mx, my = love.mouse.getPosition() -- get mouse position
 
-	block:draw() -- draw the block at its new position
-
-	if block:is_intersecting_point(mx, my) then
-		
+	-- if user is currently dragging a block, update
+	-- the position to the mouse
+	if dragged_block then
+		block.x = mx - block_drag_x
+		block.y = my - block_drag_y
 	end
 end
 
+function love.mousepressed(mx, my, button)
+	-- if left mouse button was pressed
+	if button == 1 then
+		-- if mouse is hovering over a block, begin drag
+		if block:is_intersecting_point(mx, my) then
+			dragged_block = block
+			block_drag_x = mx - block.x
+			block_drag_y = my - block.y
+		end
+	end
+end
+
+function love.mousereleased(mx, my, button)
+	-- if lmb was pressed
+	if button == 1 then
+		-- end the current drag
+		-- if there is no drag, dragged_block
+		-- is already nil so this has no effect
+		if dragged_block then
+			dragged_block = nil
+		end
+	end
+end
 --[[function randstr()
 	x = math.random(0,11)
 	if x == 0 then
@@ -75,10 +114,6 @@ end
 		v="it should not be possible to receive this error."
 	end
 end ]] --old code
-
-function love.update(dt)
-	-- randstr() --old code
-end
 
 --[[function love.keyreleased(key, scancode)
 	if key == "r" then
