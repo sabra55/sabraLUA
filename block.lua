@@ -20,12 +20,17 @@ function Block.new()
     self.left_part = love.graphics.newQuad(0, 0, 10, 16, self.spritesheet)
     self.middle_part = love.graphics.newQuad(0, 16, 1, 14, self.spritesheet)
     self.right_part = love.graphics.newQuad(0, 30, 5, 14, self.spritesheet)
+
+    -- calculate bounding box of block
+    self.width = 10 + self.font:getWidth(self.text) + 5
+    self.height = 14
     
     return self
 end
  
 function Block:draw()
     -- draw left block of part
+    love.graphics.setColor(1, 1, 1)
     love.graphics.draw(self.spritesheet ,self.left_part, self.x, self.y)
 
     -- procedure to draw middle part of block
@@ -41,6 +46,17 @@ function Block:draw()
 
 	love.graphics.draw(self.spritesheet, self.right_part, self.x+10 + text_len, self.y)	-- draw right part	
 	love.graphics.print(self.text, self.x + 2, self.y + 2) -- draw block text
+
+    -- DEBUG: draw bounding box
+    love.graphics.setLineWidth(1)
+    love.graphics.setColor(1, 0, 0)
+    love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
+end
+
+-- returns true if the given point is intersecting
+-- with the block's rectangular bounds
+function Block:is_intersecting_point(x, y)
+    return x > self.x and x < self.x + self.width and y > self.y and y < self.y + self.height 
 end
 
 return Block

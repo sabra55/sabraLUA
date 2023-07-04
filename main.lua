@@ -36,8 +36,13 @@ end
 function love.draw()
 	--love.graphics.print(v,50,50) --old code
 	love.graphics.clear(0.95, 0.98, 0.9, 0) -- refresh screen
-	block.x, block.y = love.mouse.getPosition() -- get mouse position and make the block go there
+	local mx, my = love.mouse.getPosition() -- get mouse position
+
 	block:draw() -- draw the block at its new position
+
+	if block:is_intersecting_point(mx, my) then
+		
+	end
 end
 
 --[[function randstr()
