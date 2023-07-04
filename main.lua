@@ -2,6 +2,19 @@
 -- created 30 june 2023			sabra55/luna
 -- last updated 04 july 2023	sabra55/luna
 
+-- this piece of code is to get a lua debugger to work
+-- if you do not have the vscode local lua debugger
+-- extension installed, this shouldn't affect anything
+if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
+	require("lldebugger").start()
+
+	-- for some reason, assertion errors point to a lldebugger internal file
+	-- so i'm redefining assert to fix that
+	function assert(a, b)
+		return a or error(b or "assertion failed!", 2)
+	end
+end
+
 function love.load()
 	--[[fmstring = "File"
 	omstring = "Options"
