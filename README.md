@@ -7,3 +7,15 @@ build.bat - opens a LÖVE2D window with main.lua running
 main.lua - main code
 
 functionality: when a window is opened there will be a block called "test block 1234567890 asdfghjklzxcvbnm" that will follow the mouse cursour around.
+
+functions:
+
+drawblock( x , y , text ):
+
+a nonefficient way to draw a block
+
+x - x position to draw the block in
+
+y - y position to draw the block in
+
+text - text to display on the block
