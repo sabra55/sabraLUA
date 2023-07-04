@@ -3,8 +3,10 @@ my code repository for sabraLUA https://scratch.mit.edu/discuss/topic/693608/
 
 ### requires LÖVE2D 0.10.0 or above!
 
-blk_mot_spr.png - short for "block Motion spritesheet". temporary, will replace with a white version (for hueing) after the blocks are fully implemented.
+assets\blk_mot_spr.png - short for "block Motion spritesheet". temporary, will replace with a white version (for hueing) after the blocks are fully implemented.
+
 build.bat - opens a LÖVE2D window with main.lua running
+
 main.lua - main code
 
 changelog:
