@@ -13,10 +13,17 @@ if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
 	function assert(a, b)
 		return a or error(b or "assertion failed!", 2)
 	end
+
+	-- override the error handler to break and debug the program at
+	-- the location the error occured
+	function love.errorhandler(msg)
+		error(msg, 2)
+	end
 end
 
 local Block = require("block")
-local block = Block.new() -- create a new block
+local blocks = {} -- list of all blocks
+table.insert(blocks, Block.new()) -- create a new block
 
 -- variables used for block dragging state
 -- currently, there is only one block, so this could
@@ -47,7 +54,11 @@ end
 function love.draw()
 	--love.graphics.print(v,50,50) --old code
 	love.graphics.clear(0.95, 0.98, 0.9, 0) -- refresh screen
-	block:draw() -- draw the block at its new position
+
+	-- draw all blocks
+	for _, block in ipairs(blocks) do
+		block:draw()
+	end
 end
 
 function love.update()
@@ -56,8 +67,8 @@ function love.update()
 	-- if user is currently dragging a block, update
 	-- the position to the mouse
 	if dragged_block then
-		block.x = mx - block_drag_x
-		block.y = my - block_drag_y
+		dragged_block.x = mx - block_drag_x
+		dragged_block.y = my - block_drag_y
 	end
 end
 
@@ -65,10 +76,24 @@ function love.mousepressed(mx, my, button)
 	-- if left mouse button was pressed
 	if button == 1 then
 		-- if mouse is hovering over a block, begin drag
-		if block:is_intersecting_point(mx, my) then
-			dragged_block = block
-			block_drag_x = mx - block.x
-			block_drag_y = my - block.y
+		-- iterate through array backwards, as the block
+		-- that is situated later in the array is the
+		-- block that is rendered in front
+		for i=#blocks, 1, -1 do
+			local block = blocks[i]
+
+			if block:is_intersecting_point(mx, my) then
+				-- found a block under the user's cursor
+				dragged_block = block
+				block_drag_x = mx - block.x
+				block_drag_y = my - block.y
+
+				-- move block to the end of the blocks array
+				-- so that it gets rendered in front
+				table.remove(blocks, i)
+				table.insert(blocks, dragged_block)
+				break
+			end
 		end
 	end
 end
