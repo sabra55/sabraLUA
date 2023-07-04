@@ -15,13 +15,13 @@ function love.load()
 	h1string = "Help menu item 1"
 	h2string = "Help menu item 2"
 	h3string = "Help menu item 3"]] --old code
-	tbs1 = "test block 1234567890 asdfghjklzxcvbnm"		-- text to be displayed on the test block
-	mss = love.graphics.newImage("blk_mot_spr.png")		-- motion block spritesheet. temporary, will be updated to be hue-able later.
-	lpartblock = love.graphics.newQuad(0,0,10,16,mss)	-- left part
-	mpartblock = love.graphics.newQuad(0,16,1,14,mss)	-- middle part (for scaling, so that the text won't go outside the block)
-	rpartblock = love.graphics.newQuad(0,30,5,14,mss)	-- right part
-	blf = love.graphics.newFont(9)						-- block's font
-	bx, by = nil										-- block's position
+	tbs1 = "test block 1234567890 asdfghjklzxcvbnm"			-- text to be displayed on the test block
+	mss = love.graphics.newImage("assets/blk_mot_spr.png")	-- motion block spritesheet. temporary, will be updated to be hue-able later.
+	lpartblock = love.graphics.newQuad(0,0,10,16,mss)		-- left part
+	mpartblock = love.graphics.newQuad(0,16,1,14,mss)		-- middle part (for scaling, so that the text won't go outside the block)
+	rpartblock = love.graphics.newQuad(0,30,5,14,mss)		-- right part
+	blf = love.graphics.newFont(9)							-- block's font
+	bx, by = nil											-- block's position
 end
 
 -------------------------------------------------------------
