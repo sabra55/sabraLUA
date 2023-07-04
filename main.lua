@@ -15,6 +15,10 @@ if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
 	end
 end
 
+local Block = require("block")
+
+local block
+
 function love.load()
 	--[[fmstring = "File"
 	omstring = "Options"
@@ -28,39 +32,14 @@ function love.load()
 	h1string = "Help menu item 1"
 	h2string = "Help menu item 2"
 	h3string = "Help menu item 3"]] --old code
-	tbs1 = "test block 1234567890 asdfghjklzxcvbnm"			-- text to be displayed on the test block
-	mss = love.graphics.newImage("assets/blk_mot_spr.png")	-- motion block spritesheet. temporary, will be updated to be hue-able later.
-	lpartblock = love.graphics.newQuad(0,0,10,16,mss)		-- left part
-	mpartblock = love.graphics.newQuad(0,16,1,14,mss)		-- middle part (for scaling, so that the text won't go outside the block)
-	rpartblock = love.graphics.newQuad(0,30,5,14,mss)		-- right part
-	blf = love.graphics.newFont(9)							-- block's font
-	bx, by = nil											-- block's position
-end
-
--------------------------------------------------------------
--- FUNCTION drawblock( x , y , text )
--- a nonefficient way to draw a block
--- x - x position to draw the block in
--- y - y position to draw the block in
--- text - text to display on the block
--------------------------------------------------------------
-function drawblock(x,y,text)
-	love.graphics.draw(mss,lpartblock,x,y)		-- draw block's left part
-	bst = love.graphics.newText(blf,text)		-- create block string
-	bsi = bst:add(text)							-- get block string index
-	tl = bst:getWidth(bsi)						-- text's length in pixels
-	for i = 0,tl,1 do							-- loop through text pixel length
-		love.graphics.draw(mss,mpartblock,x+10+i,y)	-- draw middle part
-	end
-	love.graphics.draw(mss,rpartblock,x+10+tl,y)	-- draw right part	
-	love.graphics.draw(bst,x+2,y+2)				-- draw block string
+	block = Block.new()
 end
 
 function love.draw()
 	--love.graphics.print(v,50,50) --old code
-	love.graphics.clear(0.95,0.98,0.9,0)		-- refresh screen
-	bx,by = love.mouse.getPosition()			-- get mouse position and make the block go there
-	drawblock(bx,by,tbs1)						-- draw block at (X: bx Y: by) with the text (tbs1)
+	love.graphics.clear(0.95, 0.98, 0.9, 0) -- refresh screen
+	block.x, block.y = love.mouse.getPosition() -- get mouse position and make the block go there
+	block:draw() -- draw the block at its new position
 end
 
 --[[function randstr()
