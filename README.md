@@ -15,6 +15,13 @@ blocks.lua - block drawing (pkhead)
 
 changelog:
 
+version 0.2 (pkhead) (6 july 2023):
+* made red border around every block (why?)
+* now able to spawn new blocks by clicking right mouse button
+* made a new block class
+* split blocks code from main.lua
+* now able to drag blocks, but don't follow around the mouse by default
+
 version 0.1 (4 july 2023):
 * added drawblock function
 * made the window refresh itself
