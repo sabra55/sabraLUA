@@ -2,6 +2,40 @@
 -- created 30 june 2023			sabra55/luna
 -- last updated 04 july 2023	sabra55/luna
 
+-- this piece of code is to get a lua debugger to work
+-- if you do not have the vscode local lua debugger
+-- extension installed, this shouldn't affect anything
+if os.getenv("LOCAL_LUA_DEBUGGER_VSCODE") == "1" then
+	require("lldebugger").start()
+
+	-- for some reason, assertion errors point to a lldebugger internal file
+	-- so i'm redefining assert to fix that
+	function assert(a, b)
+		return a or error(b or "assertion failed!", 2)
+	end
+
+	-- override the error handler to break and debug the program at
+	-- the location the error occured
+	function love.errorhandler(msg)
+		error(msg, 2)
+	end
+end
+
+local Block = require("block")
+local blocks = {} -- list of all blocks
+table.insert(blocks, Block.new(20, 20)) -- create a new block
+
+-- variables used for block dragging state
+-- currently, there is only one block, so this could
+-- be represented as a boolean. but obviously in the future,
+-- there will be more than one block
+local dragged_block = nil -- the block that is currently being dragged
+
+-- the following two variables are only valid if dragged_block
+-- is not equal to nil
+local block_drag_x = 0 -- the mouse X offset from the origin of dragged_block
+local block_drag_y = 0 -- the Y offset
+
 function love.load()
 	--[[fmstring = "File"
 	omstring = "Options"
@@ -15,41 +49,78 @@ function love.load()
 	h1string = "Help menu item 1"
 	h2string = "Help menu item 2"
 	h3string = "Help menu item 3"]] --old code
-	tbs1 = "test block 1234567890 asdfghjklzxcvbnm"			-- text to be displayed on the test block
-	mss = love.graphics.newImage("assets/blk_mot_spr.png")	-- motion block spritesheet. temporary, will be updated to be hue-able later.
-	lpartblock = love.graphics.newQuad(0,0,10,16,mss)		-- left part
-	mpartblock = love.graphics.newQuad(0,16,1,14,mss)		-- middle part (for scaling, so that the text won't go outside the block)
-	rpartblock = love.graphics.newQuad(0,30,5,14,mss)		-- right part
-	blf = love.graphics.newFont(9)							-- block's font
-	bx, by = nil											-- block's position
 end
 
--------------------------------------------------------------
--- FUNCTION drawblock( x , y , text )
--- a nonefficient way to draw a block
--- x - x position to draw the block in
--- y - y position to draw the block in
--- text - text to display on the block
--------------------------------------------------------------
-function drawblock(x,y,text)
-	love.graphics.draw(mss,lpartblock,x,y)		-- draw block's left part
-	bst = love.graphics.newText(blf,text)		-- create block string
-	bsi = bst:add(text)							-- get block string index
-	tl = bst:getWidth(bsi)						-- text's length in pixels
-	for i = 0,tl,1 do							-- loop through text pixel length
-		love.graphics.draw(mss,mpartblock,x+10+i,y)	-- draw middle part
-	end
-	love.graphics.draw(mss,rpartblock,x+10+tl,y)	-- draw right part	
-	love.graphics.draw(bst,x+2,y+2)				-- draw block string
-end
-
+-- font for drawing help that (that should
+-- be removed later)
+local font_12px = love.graphics.newFont(12)
 function love.draw()
 	--love.graphics.print(v,50,50) --old code
-	love.graphics.clear(0.95,0.98,0.9,0)		-- refresh screen
-	bx,by = love.mouse.getPosition()			-- get mouse position and make the block go there
-	drawblock(bx,by,tbs1)						-- draw block at (X: bx Y: by) with the text (tbs1)
+	love.graphics.clear(0.95, 0.98, 0.9, 0) -- refresh screen
+
+	-- draw help text
+	love.graphics.setColor(0, 0, 0)
+	love.graphics.setFont(font_12px)
+	love.graphics.print("press rmb to create a new block", 1, 1)
+
+	-- draw all blocks
+	for _, block in ipairs(blocks) do
+		block:draw()
+	end
 end
 
+function love.update()
+	local mx, my = love.mouse.getPosition() -- get mouse position
+
+	-- if user is currently dragging a block, update
+	-- the position to the mouse
+	if dragged_block then
+		dragged_block.x = mx - block_drag_x
+		dragged_block.y = my - block_drag_y
+	end
+end
+
+function love.mousepressed(mx, my, button)
+	-- if left mouse button was pressed
+	if button == 1 then
+		-- if mouse is hovering over a block, begin drag
+		-- iterate through array backwards, as the block
+		-- that is situated later in the array is the
+		-- block that is rendered in front
+		for i=#blocks, 1, -1 do
+			local block = blocks[i]
+
+			if block:is_intersecting_point(mx, my) then
+				-- found a block under the user's cursor
+				dragged_block = block
+				block_drag_x = mx - block.x
+				block_drag_y = my - block.y
+
+				-- move block to the end of the blocks array
+				-- so that it gets rendered in front
+				table.remove(blocks, i)
+				table.insert(blocks, dragged_block)
+				break
+			end
+		end
+	
+	-- right mouse button pressed, so create a new block at mouse position
+	elseif button == 2 then
+		table.insert(blocks, Block.new(mx, my))
+	end
+end
+
+function love.mousereleased(mx, my, button)
+	-- if lmb was pressed
+	if button == 1 then
+		-- end the current drag
+		-- if there is no drag, dragged_block
+		-- is already nil so this has no effect
+		if dragged_block then
+			dragged_block = nil
+		end
+	end
+end
 --[[function randstr()
 	x = math.random(0,11)
 	if x == 0 then
@@ -80,10 +151,6 @@ end
 		v="it should not be possible to receive this error."
 	end
 end ]] --old code
-
-function love.update(dt)
-	-- randstr() --old code
-end
 
 --[[function love.keyreleased(key, scancode)
 	if key == "r" then
